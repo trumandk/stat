@@ -35,8 +35,7 @@ func status(w http.ResponseWriter, req *http.Request) {
 	}
 
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv)
-	//cli, err := client.NewClientWithOpts(client.WithHost("tcp://192.168.1.132:2375"), client.WithAPIVersionNegotiation())
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
 	if err != nil {
 		panic(err)
