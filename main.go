@@ -23,11 +23,6 @@ type Message struct {
 	Stopped     int
 }
 
-/*
-   fmt.Fprintf(w, "<td>%d</td>", info.ContainersRunning)
-   fmt.Fprintf(w, "<td>%d</td>", info.ContainersPaused)
-   fmt.Fprintf(w, "<td>%d</td>", info.ContainersStopped)
-*/
 func status(w http.ResponseWriter, req *http.Request) {
 	v, err := mem.VirtualMemory()
 
@@ -40,7 +35,7 @@ func status(w http.ResponseWriter, req *http.Request) {
 	}
 
 	ctx := context.Background()
-		cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	//cli, err := client.NewClientWithOpts(client.WithHost("tcp://192.168.1.132:2375"), client.WithAPIVersionNegotiation())
 
 	if err != nil {
@@ -56,7 +51,6 @@ func status(w http.ResponseWriter, req *http.Request) {
 		fmt.Sprintf("%.2f GB", float64(v.Available)/1000000000),
 		int(v.UsedPercent),
 		int(times[0]),
-		//math.Round(times[0] * 100 / 100),
 		info.Containers,
 		info.ContainersRunning,
 		info.ContainersPaused,

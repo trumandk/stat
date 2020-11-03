@@ -4,9 +4,7 @@ RUN apk update
 RUN apk add --no-cache git
 WORKDIR /app/
 
-RUN go get github.com/pin/tftp
-RUN go get github.com/go-git/go-git
-RUN go get github.com/sparrc/go-ping
+RUN go get golang.org/x/sys/unix
 RUN go get github.com/docker/docker/client
 RUN go get github.com/shirou/gopsutil/cpu
 
