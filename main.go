@@ -9,22 +9,21 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"log"
-	"time"
 	"net/http"
+	"time"
 )
 
 type Message struct {
-	Total       string
-	Available   string
-	UsedPercent int
-	CPU         int
-	Containers  int
-	Running     int
-	Paused      int
-	Stopped     int
-	Uptime      string
-	Procs       uint64
-	HostID      string
+	RAM     string
+	Free    string
+	UsedRAM string
+	CPU     string
+	Dockers int
+	Running int
+	Paused  int
+	Stopped int
+	Uptime  string
+	HostID  string
 }
 
 func status(w http.ResponseWriter, req *http.Request) {
@@ -55,16 +54,15 @@ func status(w http.ResponseWriter, req *http.Request) {
 	}
 
 	m := Message{
-		fmt.Sprintf("%.2f GB", float64(v.Total)/1000000000),
-		fmt.Sprintf("%.2f GB", float64(v.Available)/1000000000),
-		int(v.UsedPercent),
-		int(times[0]),
+		fmt.Sprintf("%.2fGB", float64(v.Total)/1000000000),
+		fmt.Sprintf("%.2fGB", float64(v.Available)/1000000000),
+		fmt.Sprintf("%.1f%%", v.UsedPercent),
+		fmt.Sprintf("%.1f%%", times[0]),
 		info.Containers,
 		info.ContainersRunning,
 		info.ContainersPaused,
 		info.ContainersStopped,
 		time.Duration(time.Duration(infoStat.Uptime) * time.Second).String(),
-		infoStat.Procs,
 		infoStat.HostID,
 	}
 	b, err := json.MarshalIndent(m, "", " ")
