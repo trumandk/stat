@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"github.com/docker/docker/client"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"log"
-	//"math"
+	"time"
 	"net/http"
 )
 
@@ -21,6 +22,9 @@ type Message struct {
 	Running     int
 	Paused      int
 	Stopped     int
+	Uptime      string
+	Procs       uint64
+	HostID      string
 }
 
 func status(w http.ResponseWriter, req *http.Request) {
@@ -45,6 +49,11 @@ func status(w http.ResponseWriter, req *http.Request) {
 		panic(err2)
 	}
 
+	infoStat, err3 := host.Info()
+	if err3 != nil {
+		panic(err3)
+	}
+
 	m := Message{
 		fmt.Sprintf("%.2f GB", float64(v.Total)/1000000000),
 		fmt.Sprintf("%.2f GB", float64(v.Available)/1000000000),
@@ -54,6 +63,9 @@ func status(w http.ResponseWriter, req *http.Request) {
 		info.ContainersRunning,
 		info.ContainersPaused,
 		info.ContainersStopped,
+		time.Duration(time.Duration(infoStat.Uptime) * time.Second).String(),
+		infoStat.Procs,
+		infoStat.HostID,
 	}
 	b, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
