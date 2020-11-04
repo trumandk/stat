@@ -14,9 +14,9 @@ import (
 )
 
 type Message struct {
-	RAM     string
-	Free    string
-	UsedRAM string
+	RAM  string
+	Free string
+	//Free    string
 	CPU     string
 	Dockers int
 	Running int
@@ -56,7 +56,7 @@ func status(w http.ResponseWriter, req *http.Request) {
 	m := Message{
 		fmt.Sprintf("%.2fGB", float64(v.Total)/1000000000),
 		fmt.Sprintf("%.2fGB", float64(v.Available)/1000000000),
-		fmt.Sprintf("%.1f%%", v.UsedPercent),
+		//fmt.Sprintf("%.2f%%", float64(float64(v.Available/1000000)/float64(v.Total/1000000))*100),
 		fmt.Sprintf("%.1f%%", times[0]),
 		info.Containers,
 		info.ContainersRunning,
