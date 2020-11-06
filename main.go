@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/docker/docker/client"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"log"
@@ -14,16 +15,17 @@ import (
 )
 
 type Message struct {
-	RAM  string
-	Free string
+	RAM     string
+	FreeRam string
 	//Free    string
-	CPU     string
-	Dockers int
-	Running int
-	Paused  int
-	Stopped int
-	Uptime  string
-	HostID  string
+	CPU      string
+	Dockers  int
+	Running  int
+	Paused   int
+	Stopped  int
+	Uptime   string
+	Disk     string
+	FreeDisk string
 }
 
 func status(w http.ResponseWriter, req *http.Request) {
@@ -53,6 +55,11 @@ func status(w http.ResponseWriter, req *http.Request) {
 		panic(err3)
 	}
 
+	usageStat, err4 := disk.Usage("/")
+	if err4 != nil {
+		panic(err4)
+	}
+
 	m := Message{
 		fmt.Sprintf("%.2fGB", float64(v.Total)/1000000000),
 		fmt.Sprintf("%.2fGB", float64(v.Available)/1000000000),
@@ -63,7 +70,8 @@ func status(w http.ResponseWriter, req *http.Request) {
 		info.ContainersPaused,
 		info.ContainersStopped,
 		time.Duration(time.Duration(infoStat.Uptime) * time.Second).String(),
-		infoStat.HostID,
+		fmt.Sprintf("%.2fGB", float64(usageStat.Total)/1000000000),
+		fmt.Sprintf("%.2fGB", float64(usageStat.Free)/1000000000),
 	}
 	b, err := json.MarshalIndent(m, "", " ")
 	if err != nil {
